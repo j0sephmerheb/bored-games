@@ -14,5 +14,6 @@ export class AppComponent {
   menuItems = [
     { path: '/', label: 'Home' }, 
     { path: '/word-guessing', label: 'Word Guessing' }, 
+    { path: '/cam-puzzle', label: 'Cam Puzzle' }, 
   ];
 }

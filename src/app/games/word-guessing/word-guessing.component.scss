@@ -1,6 +1,6 @@
 
 .main {
-    @apply max-w-[800px] text-center m-4 p-4 mx-auto border border-gray-300 bg-gray-100 rounded-md
+    @apply max-w-[1032px] text-center m-4 p-4 mx-auto border border-gray-300 bg-gray-100 rounded-md
 }
 
 h1 {
@@ -11,8 +11,8 @@ h1 {
     @apply m-0 border border-gray-300 bg-white text-gray-900 text-center rounded-md;
     padding: 0 8px;
     font-family: sans-serif;
-    line-height: 32px;
-    height: 32px;
+    line-height: 36px;
+    height: 36px;
 
     &:disabled {
         opacity: 0.5;

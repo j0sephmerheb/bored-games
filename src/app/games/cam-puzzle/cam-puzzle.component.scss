@@ -1,0 +1,49 @@
+.main {
+  @apply max-w-[1032px] text-center m-4 p-4 mx-auto border border-gray-300 bg-gray-100 rounded-md
+}
+
+h1 {
+  @apply mb-4 text-xl font-bold
+}
+
+.btns-holder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+
+.select {
+  @apply m-0 border border-gray-300 bg-white text-gray-900 text-center rounded-md;
+  padding: 0 8px;
+  font-family: sans-serif;
+  line-height: 36px;
+  height: 36px;
+
+  &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+  }
+}
+
+.btn {
+  @apply px-4 py-2 border-0 block text-sm font-medium text-white rounded-md;
+  background: #111;
+  cursor: pointer;
+
+  &.red {
+      background: #ff4e50;
+  }
+  &.green {
+      background: #4db8a3;
+  }
+  &.blue {
+      background: #0083b0;
+  }
+  &:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
+  }
+}

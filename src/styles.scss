@@ -17,3 +17,19 @@ body {
 *, *::after, *::before {
     box-sizing: border-box;
 }
+
+/* PUZZLE */
+#gameArea {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.puzzlePiece {
+    border: 1px solid #000;
+    box-sizing: border-box;
+    position: absolute;
+    cursor: pointer;
+}
+
+  /* PUZZLE 8END */
