@@ -9,10 +9,10 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'just-bored';
+  title = 'Just Bored';
 
   menuItems = [
     { path: '/', label: 'Home' }, 
-    { path: '/word-guessing', label: 'Word Guessing Game' }, 
+    { path: '/word-guessing', label: 'Word Guessing' }, 
   ];
 }
