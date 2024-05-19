@@ -1,1 +1,2 @@
-v: 0.00.1
+# v: 0.1.0
+- Moving static html files
