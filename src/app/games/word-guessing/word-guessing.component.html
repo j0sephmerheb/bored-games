@@ -9,10 +9,10 @@
 
     @if(gameStarted){
     <div id="gameContainer">
-        <p>
+        <div class="mb-2">
             Guess the words using the following characters:<br>
             <strong>{{ shuffledWord }}</strong>
-        </p>
+        </div>
 
         <input type="text" id="userGuess" [(ngModel)]="userGuess" placeholder="Your guess" class="input">
 
@@ -21,7 +21,7 @@
             <button class="btn red" (click)="showWord()">Show Word</button>
         </div>
 
-        <p><i><strong>Hint: </strong>{{ wordHint }}</i></p>
+        <div class="mt-4"><i><strong>Hint: </strong>{{ wordHint }}</i></div>
     </div>
     }
 </div>
