@@ -1,0 +1,13 @@
+<header class="bg-blue-900 text-white">
+    <nav class="p-4 flex justify-between items-center">
+        <div class="text-lg font-semibold">
+            Just Bored
+        </div>
+
+        <ul class="flex space-x-4">
+            @for (item of menuItems; track item.label) {
+                <li><a routerLink="{{ item.path }}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="font-medium hover:text-gray-200 ">{{ item.label }}</a></li>
+            }
+        </ul>
+    </nav>
+</header>
