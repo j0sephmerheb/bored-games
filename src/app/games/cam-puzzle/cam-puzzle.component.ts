@@ -95,6 +95,18 @@ export class CamPuzzleComponent implements AfterViewInit {
     const context = canvas.getContext('2d');
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Apply brightness adjustment (example)
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const adjustment = 30; // Example adjustment value
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] += adjustment;     // R
+        data[i + 1] += adjustment; // G
+        data[i + 2] += adjustment; // B
+      }
+      context.putImageData(imageData, 0, 0);
+  
       this.img.src = canvas.toDataURL('image/png');
       this.img.onload = () => {
         this.originalImageWidth = this.img.width;
@@ -103,6 +115,7 @@ export class CamPuzzleComponent implements AfterViewInit {
       };
     }
   }
+  
 
   createPuzzle(image: HTMLImageElement) {
     const gameArea = this.gameAreaRef.nativeElement;
