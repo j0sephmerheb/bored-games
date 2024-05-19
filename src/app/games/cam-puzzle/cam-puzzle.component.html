@@ -1,0 +1,25 @@
+<div class="main">
+    <h1>Cam Puzzle</h1>
+
+    <input type="file" #uploadInput accept="image/*" style="display: none;">
+
+    <div class="btns-holder mb-4">
+        <button class="btn" id="startCamera">Use Camera</button>
+        <button class="btn" id="uploadPhoto">Upload Photo</button>
+    </div>
+
+    <div class="flex justify-center items-center gap-2">
+        <button class="btn red" id="restart">Restart</button>
+        <select class="select" id="puzzleSize">
+            <option value="4">4 x 4</option>
+            <option value="6">6 x 6</option>
+            <option value="8">8 x 8</option>
+            <option value="10">10 x 10</option>
+            <option value="12">12 x 12</option>
+        </select>
+        <button class="btn blue" id="reveal">Reveal</button>
+    </div>
+
+    <!-- Puzzle Area -->
+    <div #gameArea id="gameArea"></div>
+</div>
