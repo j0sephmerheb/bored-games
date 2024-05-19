@@ -6,6 +6,7 @@
 html {
     height: 100%;
 }
+
 body {
     margin: 0;
     font-family: sans-serif;
@@ -13,6 +14,7 @@ body {
     line-height: 1.4;
     background: #fff;
     color: #111;
+    height: 100%;
 }
 *, *::after, *::before {
     box-sizing: border-box;
@@ -31,5 +33,4 @@ body {
     position: absolute;
     cursor: pointer;
 }
-
-  /* PUZZLE 8END */
+/* PUZZLE 8END */

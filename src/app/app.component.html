@@ -1,8 +1,5 @@
-<ul>
-  @for (item of menuItems; track item) {
-  <a routerLink="{{ item.path }}">{{ item.label }}</a>
-  }
-</ul>
+<app-header />
 
-
-<router-outlet></router-outlet>
+<div class="p-4">
+  <router-outlet></router-outlet>
+</div>
