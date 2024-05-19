@@ -1,6 +1,6 @@
 
-.main {
-    @apply max-w-[1032px] text-center m-4 p-4 mx-auto border border-gray-300 bg-gray-100 rounded-md
+.main { 
+    @apply max-w-[1032px] text-center p-4 mx-auto;
 }
 
 h1 {
@@ -25,9 +25,6 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px dashed #111;
 
     .input {
         padding: 0 2px;

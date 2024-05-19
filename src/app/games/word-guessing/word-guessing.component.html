@@ -4,8 +4,9 @@
     <div class="input-holder">
         <label for="charCount">Select number of characters (4-20)</label>
         <input type="number" id="charCount" [(ngModel)]="charCount" min="4" max="20" class="input">
-        <button class="btn blue" (click)="startGame()">New Game</button>
     </div>
+
+    <button class="btn blue m-auto mb-4" (click)="startGame()">New Game</button>
 
     @if(gameStarted){
     <div id="gameContainer">
