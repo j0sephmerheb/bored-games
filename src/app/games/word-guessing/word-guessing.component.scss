@@ -1,30 +1,18 @@
 
 .main {
-    max-width: 800px;
-    margin: 16px auto;
-    border: 1px solid #111;
-    padding: 16px;
-    text-align: center;
-    background: #eee;
-    border-radius: 5px;
+    @apply max-w-[800px] text-center m-4 p-4 mx-auto border border-gray-300 bg-gray-100 rounded-md
 }
 
 h1 {
-    margin: 0 0 16px;
-    text-align: center;
+    @apply mb-4 text-xl font-bold
 }
 
 .input {
-    margin: 0;
+    @apply m-0 border border-gray-300 bg-white text-gray-900 text-center rounded-md;
     padding: 0 8px;
-    border: 1px solid #111;
-    background: #fff;
     font-family: sans-serif;
-    color: #111;
     line-height: 32px;
     height: 32px;
-    text-align: center;
-    border-radius: 5px;
 
     &:disabled {
         opacity: 0.5;
@@ -63,15 +51,8 @@ h1 {
 
 
 .btn {
-    padding: 8px 16px;
-    border: 0;
-    display: block;
-    font-size: 14px;
-    font-weight: 500px;
-    font-family: sans-serif;
+    @apply px-4 py-2 border-0 block text-sm font-medium text-white rounded-md;
     background: #111;
-    color: #fff;
-    border-radius: 5px;
     cursor: pointer;
 
     &.red {

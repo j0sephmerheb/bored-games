@@ -1,4 +1,4 @@
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -19,6 +19,10 @@ export class WordGuessingComponent {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * startGame
+   * @returns 
+   */
   async startGame() {
     if (this.charCount < 4 || this.charCount > 20) {
       alert('Please select a number between 4 and 20.');
@@ -38,6 +42,12 @@ export class WordGuessingComponent {
     this.gameStarted = true;
   }
 
+
+  /**
+   * fetchRandomWord
+   * @param length 
+   * @returns 
+   */
   async fetchRandomWord(length: number): Promise<string | null> {
     try {
       const data = await this.http.get<{ [key: string]: string[] }>('assets/words.json').toPromise();
@@ -55,6 +65,11 @@ export class WordGuessingComponent {
     }
   }
 
+  /**
+   * fetchWordDefinition
+   * @param word 
+   * @returns 
+   */
   async fetchWordDefinition(word: string): Promise<string | null> {
     try {
       const data = await this.http.get<any[]>(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`).toPromise();
@@ -65,6 +80,12 @@ export class WordGuessingComponent {
     }
   }
 
+
+  /**
+   * shuffleWord
+   * @param word 
+   * @returns 
+   */
   shuffleWord(word: string): string {
     let shuffledWord = word;
     while (shuffledWord === word) {
@@ -78,6 +99,9 @@ export class WordGuessingComponent {
     return shuffledWord;
   }
 
+  /**
+   * submitGuess
+   */
   submitGuess() {
     if (this.userGuess.toLowerCase() === this.originalWord.toLowerCase()) {
       alert('Correct! The word is ' + this.originalWord);
@@ -87,12 +111,20 @@ export class WordGuessingComponent {
     }
   }
 
+
+  /**
+   * showWord
+   */
   showWord() {
     alert('The correct word is ' + this.originalWord);
     this.shuffledWord = this.originalWord;
     this.disableGame();
   }
 
+
+  /**
+   * disableGame
+   */
   private disableGame() {
     this.gameStarted = false;
   }
