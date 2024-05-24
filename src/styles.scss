@@ -21,6 +21,30 @@ body {
     box-sizing: border-box;
 }
 
+/* BTNS */
+.btn {
+    @apply px-4 py-2 border-0 block text-sm font-medium text-white rounded-md;
+    background: #111;
+    cursor: pointer;
+
+    &.red {
+        background: #ff4e50;
+    }
+    &.green {
+        background: #4db8a3;
+    }
+    &.blue {
+        background: #0083b0;
+    }
+    &:disabled{
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+/* BTNS - END */
+
+
+
 /* PUZZLE */
 .game-area {
     position: relative;

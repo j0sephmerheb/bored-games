@@ -17,11 +17,18 @@ export class CamPuzzleComponent implements AfterViewInit {
   originalImageWidth!: number;
   originalImageHeight!: number;
   firstSelectedPiece: any = null;
+  gameStarted: boolean = false;
 
+  /**
+   * ngAfterViewInit
+   */
   ngAfterViewInit() {
     this.initializeGameSettings();
   }
 
+  /**
+   * initializeGameSettings
+   */
   initializeGameSettings() {
     const puzzleSizeSelect = document.getElementById(
       'puzzleSize'
@@ -53,6 +60,10 @@ export class CamPuzzleComponent implements AfterViewInit {
     revealButton?.addEventListener('click', () => this.revealOriginal());
   }
 
+  /**
+   * handleFileUpload
+   * @param event 
+   */
   handleFileUpload(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -69,6 +80,9 @@ export class CamPuzzleComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * startCamera
+   */
   startCamera() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
@@ -82,12 +96,16 @@ export class CamPuzzleComponent implements AfterViewInit {
             stream.getTracks().forEach((track) => track.stop());
           });
         })
-        .catch((err) => alert('Camera access denied or not available.'));
+        .catch(() => alert('Camera access denied or not available.'));
     } else {
       alert('Camera access not supported on this device.');
     }
   }
 
+  /**
+   * captureImageFromVideo
+   * @param video 
+   */
   captureImageFromVideo(video: HTMLVideoElement) {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
@@ -116,7 +134,10 @@ export class CamPuzzleComponent implements AfterViewInit {
     }
   }
 
-
+/**
+ * createPuzzle
+ * @param image 
+ */
   createPuzzle(image: HTMLImageElement) {
     const gameArea = this.gameAreaRef.nativeElement;
     gameArea.innerHTML = '';
@@ -163,8 +184,12 @@ export class CamPuzzleComponent implements AfterViewInit {
       }
     }
     this.shufflePuzzle();
+    this.gameStarted = true;
   }
 
+  /**
+   * shufflePuzzle
+   */
   shufflePuzzle() {
     const positions = this.puzzlePieces.map((piece) => ({
       x: piece.style.left,
@@ -177,6 +202,10 @@ export class CamPuzzleComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * onPieceClick
+   * @param event 
+   */
   onPieceClick(event: MouseEvent) {
     const clickedPiece = event.target as HTMLElement;
 
@@ -199,6 +228,11 @@ export class CamPuzzleComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * swapPieces
+   * @param piece1 
+   * @param piece2 
+   */
   swapPieces(piece1: HTMLElement, piece2: HTMLElement) {
     const tempLeft = piece1.style.left;
     const tempTop = piece1.style.top;
@@ -208,6 +242,10 @@ export class CamPuzzleComponent implements AfterViewInit {
     piece2.style.top = tempTop;
   }
 
+  /**
+   * isPuzzleSolved
+   * @returns 
+   */
   isPuzzleSolved() {
     return this.puzzlePieces.every((piece) => {
       const correctLeft = 
@@ -221,6 +259,9 @@ export class CamPuzzleComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * revealOriginal
+   */
   revealOriginal() {
     const gameArea = this.gameAreaRef.nativeElement;
     this.img.style.position = 'absolute';
