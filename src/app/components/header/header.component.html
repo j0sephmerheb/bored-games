@@ -1,12 +1,10 @@
-<header class="bg-blue-900 text-white">
-    <nav class="p-4 flex justify-between items-center">
-        <a routerLink="/home" class="text-lg font-semibold">
-            Just Bored
-        </a>
+<header class="bg-slate-900 text-white">
+    <nav class="p-4 flex justify-end items-center">
+        <!-- <a routerLink="/home" class="text-lg font-semibold">Bored Games</a> -->
 
         <ul class="flex space-x-4">
             @for (item of menuItems; track item.label) {
-                <li><a routerLink="{{ item.path }}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="font-medium hover:text-gray-200 ">{{ item.label }}</a></li>
+                <li><a routerLink="{{ item.path }}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="font-semibold hover:text-gray-200 ">{{ item.label }}</a></li>
             }
         </ul>
     </nav>

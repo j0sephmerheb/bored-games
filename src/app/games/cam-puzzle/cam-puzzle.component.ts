@@ -37,14 +37,14 @@ export class CamPuzzleComponent implements AfterViewInit {
     startCameraButton?.addEventListener('click', () => this.startCamera());
 
     const uploadButton = document.getElementById('uploadPhoto');
-    uploadButton?.addEventListener('click', () =>
+    uploadButton?.addEventListener('click', () => 
       this.uploadInputRef.nativeElement.click()
-    );
+  );
 
     const uploadInput = this.uploadInputRef.nativeElement;
-    uploadInput.addEventListener('change', (e: any) =>
+    uploadInput.addEventListener('change', (e: any) => 
       this.handleFileUpload(e)
-    );
+  );
 
     const restartButton = document.getElementById('restart');
     restartButton?.addEventListener('click', () => this.createPuzzle(this.img));
@@ -95,7 +95,7 @@ export class CamPuzzleComponent implements AfterViewInit {
     const context = canvas.getContext('2d');
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
+
       // Apply brightness adjustment (example)
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
@@ -106,7 +106,7 @@ export class CamPuzzleComponent implements AfterViewInit {
         data[i + 2] += adjustment; // B
       }
       context.putImageData(imageData, 0, 0);
-  
+
       this.img.src = canvas.toDataURL('image/png');
       this.img.onload = () => {
         this.originalImageWidth = this.img.width;
@@ -115,7 +115,7 @@ export class CamPuzzleComponent implements AfterViewInit {
       };
     }
   }
-  
+
 
   createPuzzle(image: HTMLImageElement) {
     const gameArea = this.gameAreaRef.nativeElement;
@@ -184,7 +184,11 @@ export class CamPuzzleComponent implements AfterViewInit {
       this.firstSelectedPiece = clickedPiece;
       this.firstSelectedPiece.style.border = '2px solid lightblue';
     } else {
-      if (this.firstSelectedPiece !== clickedPiece) {
+      if (this.firstSelectedPiece === clickedPiece) {
+        // Deselect the piece if clicked again
+        this.firstSelectedPiece.style.border = 'none';
+        this.firstSelectedPiece = null;
+      } else {
         this.swapPieces(this.firstSelectedPiece, clickedPiece);
         this.firstSelectedPiece.style.border = 'none';
         this.firstSelectedPiece = null;
@@ -206,10 +210,10 @@ export class CamPuzzleComponent implements AfterViewInit {
 
   isPuzzleSolved() {
     return this.puzzlePieces.every((piece) => {
-      const correctLeft =
-        parseInt(piece.dataset.x!) * parseInt(piece.style.width);
-      const correctTop =
-        parseInt(piece.dataset.y!) * parseInt(piece.style.height);
+      const correctLeft = 
+      parseInt(piece.dataset.x!) * parseInt(piece.style.width);
+      const correctTop = 
+      parseInt(piece.dataset.y!) * parseInt(piece.style.height);
       return (
         parseInt(piece.style.left) === correctLeft &&
         parseInt(piece.style.top) === correctTop
