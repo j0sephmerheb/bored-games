@@ -1,58 +1,59 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-cam-puzzle',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './cam-puzzle.component.html',
-  styleUrl: './cam-puzzle.component.scss',
+  styleUrls: ['./cam-puzzle.component.scss'],
 })
-export class CamPuzzleComponent implements AfterViewInit {
+export class CamPuzzleComponent implements OnInit, OnDestroy {
   @ViewChild('gameArea') gameAreaRef!: ElementRef;
   @ViewChild('uploadInput') uploadInputRef!: ElementRef;
 
   img = new Image();
-  puzzleSize = 4;
   puzzlePieces: any[] = [];
   originalImageWidth!: number;
   originalImageHeight!: number;
   firstSelectedPiece: any = null;
+  gameStarted: boolean = false;
+  alertMsg: string = '';
+  puzzleSize: number = 4;
+  puzzleSizes: number[] = [4, 6, 8, 10, 12];
 
-  ngAfterViewInit() {
-    this.initializeGameSettings();
+  ngOnInit(): void {
+    // Add resize event listener
+    window.addEventListener('resize', this.onResize.bind(this));
   }
 
-  initializeGameSettings() {
-    const puzzleSizeSelect = document.getElementById(
-      'puzzleSize'
-    ) as HTMLSelectElement;
-    puzzleSizeSelect.addEventListener('change', (e: any) => {
-      this.puzzleSize = parseInt(e.target.value);
-      if (this.img.src) {
-        this.createPuzzle(this.img);
-      }
-    });
-
-    const startCameraButton = document.getElementById('startCamera');
-    startCameraButton?.addEventListener('click', () => this.startCamera());
-
-    const uploadButton = document.getElementById('uploadPhoto');
-    uploadButton?.addEventListener('click', () => 
-      this.uploadInputRef.nativeElement.click()
-  );
-
-    const uploadInput = this.uploadInputRef.nativeElement;
-    uploadInput.addEventListener('change', (e: any) => 
-      this.handleFileUpload(e)
-  );
-
-    const restartButton = document.getElementById('restart');
-    restartButton?.addEventListener('click', () => this.createPuzzle(this.img));
-
-    const revealButton = document.getElementById('reveal');
-    revealButton?.addEventListener('click', () => this.revealOriginal());
+  ngOnDestroy(): void {
+    // Remove resize event listener to avoid memory leaks
+    window.removeEventListener('resize', this.onResize.bind(this));
   }
 
+  /**
+   * onResize
+   */
+  onResize(): void {
+    if (this.gameStarted) {
+      this.adjustPuzzleSize();
+    }
+  }
+
+  /**
+   * onPuzzleSizeChange
+   */
+  onPuzzleSizeChange(): void {
+    if (this.img.src) {
+      this.createPuzzle();
+    }
+  }
+
+  /**
+   * handleFileUpload
+   * @param event
+   */
   handleFileUpload(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -62,13 +63,16 @@ export class CamPuzzleComponent implements AfterViewInit {
         this.img.onload = () => {
           this.originalImageWidth = this.img.width;
           this.originalImageHeight = this.img.height;
-          this.createPuzzle(this.img);
+          this.createPuzzle();
         };
       };
       reader.readAsDataURL(file);
     }
   }
 
+  /**
+   * startCamera
+   */
   startCamera() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
@@ -82,12 +86,16 @@ export class CamPuzzleComponent implements AfterViewInit {
             stream.getTracks().forEach((track) => track.stop());
           });
         })
-        .catch((err) => alert('Camera access denied or not available.'));
+        .catch(() => alert('Camera access denied or not available.'));
     } else {
       alert('Camera access not supported on this device.');
     }
   }
 
+  /**
+   * captureImageFromVideo
+   * @param video
+   */
   captureImageFromVideo(video: HTMLVideoElement) {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
@@ -96,14 +104,14 @@ export class CamPuzzleComponent implements AfterViewInit {
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Apply brightness adjustment (example)
+      // Apply brightness adjustment
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
-      const adjustment = 30; // Example adjustment value
+      const adjustment = 30;
       for (let i = 0; i < data.length; i += 4) {
-        data[i] += adjustment;     // R
-        data[i + 1] += adjustment; // G
-        data[i + 2] += adjustment; // B
+        data[i] += adjustment;
+        data[i + 1] += adjustment;
+        data[i + 2] += adjustment;
       }
       context.putImageData(imageData, 0, 0);
 
@@ -111,13 +119,18 @@ export class CamPuzzleComponent implements AfterViewInit {
       this.img.onload = () => {
         this.originalImageWidth = this.img.width;
         this.originalImageHeight = this.img.height;
-        this.createPuzzle(this.img);
+        this.createPuzzle();
       };
     }
   }
 
-
-  createPuzzle(image: HTMLImageElement) {
+  /**
+   * createPuzzle
+   * @param image
+   */
+  createPuzzle() {
+    this.alertMsg = '';
+    const image: HTMLImageElement = this.img;
     const gameArea = this.gameAreaRef.nativeElement;
     gameArea.innerHTML = '';
     this.puzzlePieces = [];
@@ -163,8 +176,12 @@ export class CamPuzzleComponent implements AfterViewInit {
       }
     }
     this.shufflePuzzle();
+    this.gameStarted = true;
   }
 
+  /**
+   * shufflePuzzle
+   */
   shufflePuzzle() {
     const positions = this.puzzlePieces.map((piece) => ({
       x: piece.style.left,
@@ -177,6 +194,10 @@ export class CamPuzzleComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * onPieceClick
+   * @param event
+   */
   onPieceClick(event: MouseEvent) {
     const clickedPiece = event.target as HTMLElement;
 
@@ -192,13 +213,19 @@ export class CamPuzzleComponent implements AfterViewInit {
         this.swapPieces(this.firstSelectedPiece, clickedPiece);
         this.firstSelectedPiece.style.border = 'none';
         this.firstSelectedPiece = null;
+
         if (this.isPuzzleSolved()) {
-          alert('Congratulations! You solved the puzzle.');
+          this.alertMsg = 'Congratulations! You solved the puzzle.';
         }
       }
     }
   }
 
+  /**
+   * swapPieces
+   * @param piece1
+   * @param piece2
+   */
   swapPieces(piece1: HTMLElement, piece2: HTMLElement) {
     const tempLeft = piece1.style.left;
     const tempTop = piece1.style.top;
@@ -208,19 +235,30 @@ export class CamPuzzleComponent implements AfterViewInit {
     piece2.style.top = tempTop;
   }
 
+  /**
+   * isPuzzleSolved
+   * @returns
+   */
   isPuzzleSolved() {
+    const tolerance = 1; // Tolerance value for position comparison
+  
     return this.puzzlePieces.every((piece) => {
-      const correctLeft = 
-      parseInt(piece.dataset.x!) * parseInt(piece.style.width);
-      const correctTop = 
-      parseInt(piece.dataset.y!) * parseInt(piece.style.height);
-      return (
-        parseInt(piece.style.left) === correctLeft &&
-        parseInt(piece.style.top) === correctTop
-      );
+      const correctLeft = parseInt(piece.dataset.x!) * piece.offsetWidth;
+      const correctTop = parseInt(piece.dataset.y!) * piece.offsetHeight;
+      const currentLeft = parseFloat(piece.style.left);
+      const currentTop = parseFloat(piece.style.top);
+  
+      // Check if the current position is within the tolerance range of the correct position
+      const leftWithinTolerance = Math.abs(currentLeft - correctLeft) <= tolerance;
+      const topWithinTolerance = Math.abs(currentTop - correctTop) <= tolerance;
+  
+      return leftWithinTolerance && topWithinTolerance;
     });
   }
 
+  /**
+   * revealOriginal
+   */
   revealOriginal() {
     const gameArea = this.gameAreaRef.nativeElement;
     this.img.style.position = 'absolute';
@@ -232,6 +270,53 @@ export class CamPuzzleComponent implements AfterViewInit {
     gameArea.appendChild(this.img);
     setTimeout(() => {
       gameArea.removeChild(this.img);
-    }, 3000);
+    }, 2000);
   }
+
+  /**
+   * uploadPhoto
+   */
+  uploadPhoto() {
+    this.uploadInputRef.nativeElement.click();
+    const uploadInput = this.uploadInputRef.nativeElement;
+    uploadInput.addEventListener('change', (e: any) =>
+      this.handleFileUpload(e)
+    );
+  }
+
+  /**
+   * adjustPuzzleSize
+   */
+  adjustPuzzleSize() {
+    const gameArea = this.gameAreaRef.nativeElement;
+    const aspectRatio = this.originalImageWidth / this.originalImageHeight;
+    const gameAreaWidth = Math.min(window.innerWidth, 1000);
+    const gameAreaHeight = gameAreaWidth / aspectRatio;
+    gameArea.style.height = `${gameAreaHeight}px`;
+
+    const pieceWidth = gameAreaWidth / this.puzzleSize;
+    const pieceHeight = gameAreaHeight / this.puzzleSize;
+
+    this.puzzlePieces.forEach((piece) => {
+      const originalX = parseInt(piece.dataset.x!);
+      const originalY = parseInt(piece.dataset.y!);
+
+      // Calculate the new left and top positions as percentages
+      const newLeftPercent = (originalX / this.puzzleSize) * 100;
+      const newTopPercent = (originalY / this.puzzleSize) * 100;
+
+      // Set the new positions as percentages
+      piece.style.left = `${newLeftPercent}%`;
+      piece.style.top = `${newTopPercent}%`;
+
+      // Set the dimensions
+      piece.style.width = `${pieceWidth}px`;
+      piece.style.height = `${pieceHeight}px`;
+    });
+
+    // Reshuffle the puzzle to maintain randomness after resize
+    this.shufflePuzzle();
+  }
+
+
 }

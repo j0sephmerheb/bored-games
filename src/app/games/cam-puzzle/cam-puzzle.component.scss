@@ -1,5 +1,5 @@
 .main {
-  @apply max-w-[1032px] text-center mx-auto pt-4
+  @apply max-w-[1000px] text-center mx-auto pt-4 relative overflow-hidden
 }
 
 h1 {
@@ -28,22 +28,29 @@ h1 {
   }
 }
 
-.btn {
-  @apply px-4 py-2 border-0 block text-sm font-medium text-white rounded-md;
-  background: #111;
-  cursor: pointer;
+.popup {
+  position: absolute;
+  z-index: 99;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba($color: #000000, $alpha: 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  -webkit-user-select: none; 
+  -moz-user-select: none;    
+  -ms-user-select: none;    
+  user-select: none;  
 
-  &.red {
-      background: #ff4e50;
-  }
-  &.green {
-      background: #4db8a3;
-  }
-  &.blue {
-      background: #0083b0;
-  }
-  &:disabled{
-      opacity: 0.5;
-      cursor: not-allowed;
+  .content {
+    background: #fff;
+    padding: 16px;
+    text-align: center;
+    font-weight: 500;
+    color: #000;
+    border-radius: 5px;
   }
 }
