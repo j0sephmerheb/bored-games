@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -13,4 +14,6 @@ export class HeaderComponent {
     { path: '/word-guessing', label: 'Word Guessing' },
     { path: '/cam-puzzle', label: 'Cam Puzzle' },
   ];
+  version = environment.version;
+
 }
