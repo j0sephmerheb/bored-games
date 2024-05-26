@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -6,9 +6,9 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './cam-puzzle.component.html',
-  styleUrl: './cam-puzzle.component.scss',
+  styleUrls: ['./cam-puzzle.component.scss'],
 })
-export class CamPuzzleComponent {
+export class CamPuzzleComponent implements OnInit, OnDestroy {
   @ViewChild('gameArea') gameAreaRef!: ElementRef;
   @ViewChild('uploadInput') uploadInputRef!: ElementRef;
 
@@ -21,6 +21,25 @@ export class CamPuzzleComponent {
   alertMsg: string = '';
   puzzleSize: number = 4;
   puzzleSizes: number[] = [4, 6, 8, 10, 12];
+
+  ngOnInit(): void {
+    // Add resize event listener
+    window.addEventListener('resize', this.onResize.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    // Remove resize event listener to avoid memory leaks
+    window.removeEventListener('resize', this.onResize.bind(this));
+  }
+
+  /**
+   * onResize
+   */
+  onResize(): void {
+    if (this.gameStarted) {
+      this.adjustPuzzleSize();
+    }
+  }
 
   /**
    * onPuzzleSizeChange
@@ -110,6 +129,7 @@ export class CamPuzzleComponent {
    * @param image
    */
   createPuzzle() {
+    this.alertMsg = '';
     const image: HTMLImageElement = this.img;
     const gameArea = this.gameAreaRef.nativeElement;
     gameArea.innerHTML = '';
@@ -157,7 +177,6 @@ export class CamPuzzleComponent {
     }
     this.shufflePuzzle();
     this.gameStarted = true;
-    this.alertMsg = '';
   }
 
   /**
@@ -194,6 +213,7 @@ export class CamPuzzleComponent {
         this.swapPieces(this.firstSelectedPiece, clickedPiece);
         this.firstSelectedPiece.style.border = 'none';
         this.firstSelectedPiece = null;
+
         if (this.isPuzzleSolved()) {
           this.alertMsg = 'Congratulations! You solved the puzzle.';
         }
@@ -220,12 +240,19 @@ export class CamPuzzleComponent {
    * @returns
    */
   isPuzzleSolved() {
+    const tolerance = 1; // Tolerance value for position comparison
+  
     return this.puzzlePieces.every((piece) => {
       const correctLeft = parseInt(piece.dataset.x!) * piece.offsetWidth;
       const correctTop = parseInt(piece.dataset.y!) * piece.offsetHeight;
-      const currentLeft = parseInt(piece.style.left);
-      const currentTop = parseInt(piece.style.top);
-      return currentLeft === correctLeft && currentTop === correctTop;
+      const currentLeft = parseFloat(piece.style.left);
+      const currentTop = parseFloat(piece.style.top);
+  
+      // Check if the current position is within the tolerance range of the correct position
+      const leftWithinTolerance = Math.abs(currentLeft - correctLeft) <= tolerance;
+      const topWithinTolerance = Math.abs(currentTop - correctTop) <= tolerance;
+  
+      return leftWithinTolerance && topWithinTolerance;
     });
   }
 
@@ -256,4 +283,40 @@ export class CamPuzzleComponent {
       this.handleFileUpload(e)
     );
   }
+
+  /**
+   * adjustPuzzleSize
+   */
+  adjustPuzzleSize() {
+    const gameArea = this.gameAreaRef.nativeElement;
+    const aspectRatio = this.originalImageWidth / this.originalImageHeight;
+    const gameAreaWidth = Math.min(window.innerWidth, 1000);
+    const gameAreaHeight = gameAreaWidth / aspectRatio;
+    gameArea.style.height = `${gameAreaHeight}px`;
+
+    const pieceWidth = gameAreaWidth / this.puzzleSize;
+    const pieceHeight = gameAreaHeight / this.puzzleSize;
+
+    this.puzzlePieces.forEach((piece) => {
+      const originalX = parseInt(piece.dataset.x!);
+      const originalY = parseInt(piece.dataset.y!);
+
+      // Calculate the new left and top positions as percentages
+      const newLeftPercent = (originalX / this.puzzleSize) * 100;
+      const newTopPercent = (originalY / this.puzzleSize) * 100;
+
+      // Set the new positions as percentages
+      piece.style.left = `${newLeftPercent}%`;
+      piece.style.top = `${newTopPercent}%`;
+
+      // Set the dimensions
+      piece.style.width = `${pieceWidth}px`;
+      piece.style.height = `${pieceHeight}px`;
+    });
+
+    // Reshuffle the puzzle to maintain randomness after resize
+    this.shufflePuzzle();
+  }
+
+
 }
