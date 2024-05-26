@@ -34,17 +34,11 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Add resize event listener
     window.addEventListener('resize', this.onResize.bind(this));
-    // Add scroll event listener
-    window.addEventListener('scroll', this.onScroll.bind(this), {
-      passive: true,
-    });
   }
 
   ngOnDestroy(): void {
     // Remove resize event listener to avoid memory leaks
     window.removeEventListener('resize', this.onResize.bind(this));
-    // Remove scroll event listener
-    window.removeEventListener('scroll', this.onScroll.bind(this));
   }
 
   /**
@@ -56,24 +50,14 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
       const currentWidth = window.innerWidth;
       const currentHeight = window.innerHeight;
       // Check if the size has changed significantly
-      if (
-        Math.abs(currentWidth - this.lastKnownWidth) > 50 ||
-        Math.abs(currentHeight - this.lastKnownHeight) > 50
-      ) {
+      if (Math.abs(currentWidth - this.lastKnownWidth) > 50 ) {
         this.lastKnownWidth = currentWidth;
         this.lastKnownHeight = currentHeight;
         if (this.gameStarted) {
           this.adjustPuzzleSize();
         }
       }
-    }, 200);
-  }
-
-  /**
-   * onScroll
-   */
-  onScroll(): void {
-    return;
+    }, 1000);
   }
 
   /**
