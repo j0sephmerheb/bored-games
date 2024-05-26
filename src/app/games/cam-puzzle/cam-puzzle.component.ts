@@ -1,4 +1,10 @@
-import { Component, ElementRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -28,11 +34,17 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Add resize event listener
     window.addEventListener('resize', this.onResize.bind(this));
+    // Add scroll event listener
+    window.addEventListener('scroll', this.onScroll.bind(this), {
+      passive: true,
+    });
   }
 
   ngOnDestroy(): void {
     // Remove resize event listener to avoid memory leaks
     window.removeEventListener('resize', this.onResize.bind(this));
+    // Remove scroll event listener
+    window.removeEventListener('scroll', this.onScroll.bind(this));
   }
 
   /**
@@ -44,7 +56,10 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
       const currentWidth = window.innerWidth;
       const currentHeight = window.innerHeight;
       // Check if the size has changed significantly
-      if (Math.abs(currentWidth - this.lastKnownWidth) > 50 || Math.abs(currentHeight - this.lastKnownHeight) > 50) {
+      if (
+        Math.abs(currentWidth - this.lastKnownWidth) > 50 ||
+        Math.abs(currentHeight - this.lastKnownHeight) > 50
+      ) {
         this.lastKnownWidth = currentWidth;
         this.lastKnownHeight = currentHeight;
         if (this.gameStarted) {
@@ -52,6 +67,13 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
         }
       }
     }, 200);
+  }
+
+  /**
+   * onScroll
+   */
+  onScroll(): void {
+    return;
   }
 
   /**
@@ -255,17 +277,18 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
    */
   isPuzzleSolved() {
     const tolerance = 1; // Tolerance value for position comparison
-  
+
     return this.puzzlePieces.every((piece) => {
       const correctLeft = parseInt(piece.dataset.x!) * piece.offsetWidth;
       const correctTop = parseInt(piece.dataset.y!) * piece.offsetHeight;
       const currentLeft = parseFloat(piece.style.left);
       const currentTop = parseFloat(piece.style.top);
-  
+
       // Check if the current position is within the tolerance range of the correct position
-      const leftWithinTolerance = Math.abs(currentLeft - correctLeft) <= tolerance;
+      const leftWithinTolerance =
+        Math.abs(currentLeft - correctLeft) <= tolerance;
       const topWithinTolerance = Math.abs(currentTop - correctTop) <= tolerance;
-  
+
       return leftWithinTolerance && topWithinTolerance;
     });
   }
