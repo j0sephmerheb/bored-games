@@ -21,6 +21,9 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   alertMsg: string = '';
   puzzleSize: number = 4;
   puzzleSizes: number[] = [4, 6, 8, 10, 12];
+  private resizeTimeout: any;
+  private lastKnownWidth: number = window.innerWidth;
+  private lastKnownHeight: number = window.innerHeight;
 
   ngOnInit(): void {
     // Add resize event listener
@@ -36,9 +39,19 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
    * onResize
    */
   onResize(): void {
-    if (this.gameStarted) {
-      this.adjustPuzzleSize();
-    }
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      // Check if the size has changed significantly
+      if (Math.abs(currentWidth - this.lastKnownWidth) > 50 || Math.abs(currentHeight - this.lastKnownHeight) > 50) {
+        this.lastKnownWidth = currentWidth;
+        this.lastKnownHeight = currentHeight;
+        if (this.gameStarted) {
+          this.adjustPuzzleSize();
+        }
+      }
+    }, 200);
   }
 
   /**
