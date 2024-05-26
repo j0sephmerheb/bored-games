@@ -21,6 +21,9 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   alertMsg: string = '';
   puzzleSize: number = 4;
   puzzleSizes: number[] = [4, 6, 8, 10, 12];
+  private resizeTimeout: any;
+  private lastKnownWidth: number = window.innerWidth;
+  private lastKnownHeight: number = window.innerHeight;
 
   ngOnInit(): void {
     // Add resize event listener
@@ -36,9 +39,19 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
    * onResize
    */
   onResize(): void {
-    if (this.gameStarted) {
-      this.adjustPuzzleSize();
-    }
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      // Check if the size has changed significantly
+      if (Math.abs(currentWidth - this.lastKnownWidth) > 50 || Math.abs(currentHeight - this.lastKnownHeight) > 50) {
+        this.lastKnownWidth = currentWidth;
+        this.lastKnownHeight = currentHeight;
+        if (this.gameStarted) {
+          this.adjustPuzzleSize();
+        }
+      }
+    }, 200);
   }
 
   /**
@@ -126,22 +139,22 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
 
   /**
    * createPuzzle
-   * @param image
    */
   createPuzzle() {
-    this.alertMsg = '';
     const image: HTMLImageElement = this.img;
     const gameArea = this.gameAreaRef.nativeElement;
     gameArea.innerHTML = '';
     this.puzzlePieces = [];
     this.firstSelectedPiece = null;
     const aspectRatio = this.originalImageWidth / this.originalImageHeight;
-    const gameAreaWidth = Math.min(window.innerWidth, 1000);
+    const maxPuzzleWidth = Math.floor(window.innerWidth / 4) * 4;
+    const gameAreaWidth = Math.min(maxPuzzleWidth, 1000);
     const gameAreaHeight = gameAreaWidth / aspectRatio;
 
+    gameArea.style.width = `${gameAreaWidth}px`;
     gameArea.style.height = `${gameAreaHeight}px`;
-    const pieceWidth = gameAreaWidth / this.puzzleSize;
-    const pieceHeight = gameAreaHeight / this.puzzleSize;
+    const pieceWidth = Math.floor(gameAreaWidth / this.puzzleSize);
+    const pieceHeight = Math.floor(gameAreaHeight / this.puzzleSize);
 
     for (let y = 0; y < this.puzzleSize; y++) {
       for (let x = 0; x < this.puzzleSize; x++) {
@@ -183,6 +196,7 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
    * shufflePuzzle
    */
   shufflePuzzle() {
+    this.alertMsg = '';
     const positions = this.puzzlePieces.map((piece) => ({
       x: piece.style.left,
       y: piece.style.top,
@@ -290,26 +304,21 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   adjustPuzzleSize() {
     const gameArea = this.gameAreaRef.nativeElement;
     const aspectRatio = this.originalImageWidth / this.originalImageHeight;
-    const gameAreaWidth = Math.min(window.innerWidth, 1000);
+    const maxPuzzleWidth = Math.floor(window.innerWidth / 4) * 4;
+    const gameAreaWidth = Math.min(maxPuzzleWidth, 1000);
     const gameAreaHeight = gameAreaWidth / aspectRatio;
+    gameArea.style.width = `${gameAreaWidth}px`;
     gameArea.style.height = `${gameAreaHeight}px`;
 
-    const pieceWidth = gameAreaWidth / this.puzzleSize;
-    const pieceHeight = gameAreaHeight / this.puzzleSize;
+    const pieceWidth = Math.floor(gameAreaWidth / this.puzzleSize);
+    const pieceHeight = Math.floor(gameAreaHeight / this.puzzleSize);
 
     this.puzzlePieces.forEach((piece) => {
       const originalX = parseInt(piece.dataset.x!);
       const originalY = parseInt(piece.dataset.y!);
 
-      // Calculate the new left and top positions as percentages
-      const newLeftPercent = (originalX / this.puzzleSize) * 100;
-      const newTopPercent = (originalY / this.puzzleSize) * 100;
-
-      // Set the new positions as percentages
-      piece.style.left = `${newLeftPercent}%`;
-      piece.style.top = `${newTopPercent}%`;
-
-      // Set the dimensions
+      piece.style.left = `${originalX * pieceWidth}px`;
+      piece.style.top = `${originalY * pieceHeight}px`;
       piece.style.width = `${pieceWidth}px`;
       piece.style.height = `${pieceHeight}px`;
     });
@@ -317,6 +326,4 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
     // Reshuffle the puzzle to maintain randomness after resize
     this.shufflePuzzle();
   }
-
-
 }
