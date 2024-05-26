@@ -1,68 +1,39 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-cam-puzzle',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './cam-puzzle.component.html',
   styleUrl: './cam-puzzle.component.scss',
 })
-export class CamPuzzleComponent implements AfterViewInit {
+export class CamPuzzleComponent {
   @ViewChild('gameArea') gameAreaRef!: ElementRef;
   @ViewChild('uploadInput') uploadInputRef!: ElementRef;
 
   img = new Image();
-  puzzleSize = 4;
   puzzlePieces: any[] = [];
   originalImageWidth!: number;
   originalImageHeight!: number;
   firstSelectedPiece: any = null;
   gameStarted: boolean = false;
+  alertMsg: string = '';
+  puzzleSize: number = 4;
+  puzzleSizes: number[] = [4, 6, 8, 10, 12];
 
   /**
-   * ngAfterViewInit
+   * onPuzzleSizeChange
    */
-  ngAfterViewInit() {
-    this.initializeGameSettings();
-  }
-
-  /**
-   * initializeGameSettings
-   */
-  initializeGameSettings() {
-    const puzzleSizeSelect = document.getElementById(
-      'puzzleSize'
-    ) as HTMLSelectElement;
-    puzzleSizeSelect.addEventListener('change', (e: any) => {
-      this.puzzleSize = parseInt(e.target.value);
-      if (this.img.src) {
-        this.createPuzzle(this.img);
-      }
-    });
-
-    const startCameraButton = document.getElementById('startCamera');
-    startCameraButton?.addEventListener('click', () => this.startCamera());
-
-    const uploadButton = document.getElementById('uploadPhoto');
-    uploadButton?.addEventListener('click', () => 
-      this.uploadInputRef.nativeElement.click()
-  );
-
-    const uploadInput = this.uploadInputRef.nativeElement;
-    uploadInput.addEventListener('change', (e: any) => 
-      this.handleFileUpload(e)
-  );
-
-    const restartButton = document.getElementById('restart');
-    restartButton?.addEventListener('click', () => this.createPuzzle(this.img));
-
-    const revealButton = document.getElementById('reveal');
-    revealButton?.addEventListener('click', () => this.revealOriginal());
+  onPuzzleSizeChange(): void {
+    if (this.img.src) {
+      this.createPuzzle();
+    }
   }
 
   /**
    * handleFileUpload
-   * @param event 
+   * @param event
    */
   handleFileUpload(event: any) {
     const file = event.target.files[0];
@@ -73,7 +44,7 @@ export class CamPuzzleComponent implements AfterViewInit {
         this.img.onload = () => {
           this.originalImageWidth = this.img.width;
           this.originalImageHeight = this.img.height;
-          this.createPuzzle(this.img);
+          this.createPuzzle();
         };
       };
       reader.readAsDataURL(file);
@@ -104,7 +75,7 @@ export class CamPuzzleComponent implements AfterViewInit {
 
   /**
    * captureImageFromVideo
-   * @param video 
+   * @param video
    */
   captureImageFromVideo(video: HTMLVideoElement) {
     const canvas = document.createElement('canvas');
@@ -114,14 +85,14 @@ export class CamPuzzleComponent implements AfterViewInit {
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Apply brightness adjustment (example)
+      // Apply brightness adjustment
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
-      const adjustment = 30; // Example adjustment value
+      const adjustment = 30;
       for (let i = 0; i < data.length; i += 4) {
-        data[i] += adjustment;     // R
-        data[i + 1] += adjustment; // G
-        data[i + 2] += adjustment; // B
+        data[i] += adjustment;
+        data[i + 1] += adjustment;
+        data[i + 2] += adjustment;
       }
       context.putImageData(imageData, 0, 0);
 
@@ -129,16 +100,17 @@ export class CamPuzzleComponent implements AfterViewInit {
       this.img.onload = () => {
         this.originalImageWidth = this.img.width;
         this.originalImageHeight = this.img.height;
-        this.createPuzzle(this.img);
+        this.createPuzzle();
       };
     }
   }
 
-/**
- * createPuzzle
- * @param image 
- */
-  createPuzzle(image: HTMLImageElement) {
+  /**
+   * createPuzzle
+   * @param image
+   */
+  createPuzzle() {
+    const image: HTMLImageElement = this.img;
     const gameArea = this.gameAreaRef.nativeElement;
     gameArea.innerHTML = '';
     this.puzzlePieces = [];
@@ -185,6 +157,7 @@ export class CamPuzzleComponent implements AfterViewInit {
     }
     this.shufflePuzzle();
     this.gameStarted = true;
+    this.alertMsg = '';
   }
 
   /**
@@ -204,7 +177,7 @@ export class CamPuzzleComponent implements AfterViewInit {
 
   /**
    * onPieceClick
-   * @param event 
+   * @param event
    */
   onPieceClick(event: MouseEvent) {
     const clickedPiece = event.target as HTMLElement;
@@ -222,7 +195,7 @@ export class CamPuzzleComponent implements AfterViewInit {
         this.firstSelectedPiece.style.border = 'none';
         this.firstSelectedPiece = null;
         if (this.isPuzzleSolved()) {
-          alert('Congratulations! You solved the puzzle.');
+          this.alertMsg = 'Congratulations! You solved the puzzle.';
         }
       }
     }
@@ -230,8 +203,8 @@ export class CamPuzzleComponent implements AfterViewInit {
 
   /**
    * swapPieces
-   * @param piece1 
-   * @param piece2 
+   * @param piece1
+   * @param piece2
    */
   swapPieces(piece1: HTMLElement, piece2: HTMLElement) {
     const tempLeft = piece1.style.left;
@@ -244,18 +217,15 @@ export class CamPuzzleComponent implements AfterViewInit {
 
   /**
    * isPuzzleSolved
-   * @returns 
+   * @returns
    */
   isPuzzleSolved() {
     return this.puzzlePieces.every((piece) => {
-      const correctLeft = 
-      parseInt(piece.dataset.x!) * parseInt(piece.style.width);
-      const correctTop = 
-      parseInt(piece.dataset.y!) * parseInt(piece.style.height);
-      return (
-        parseInt(piece.style.left) === correctLeft &&
-        parseInt(piece.style.top) === correctTop
-      );
+      const correctLeft = parseInt(piece.dataset.x!) * piece.offsetWidth;
+      const correctTop = parseInt(piece.dataset.y!) * piece.offsetHeight;
+      const currentLeft = parseInt(piece.style.left);
+      const currentTop = parseInt(piece.style.top);
+      return currentLeft === correctLeft && currentTop === correctTop;
     });
   }
 
@@ -273,6 +243,17 @@ export class CamPuzzleComponent implements AfterViewInit {
     gameArea.appendChild(this.img);
     setTimeout(() => {
       gameArea.removeChild(this.img);
-    }, 3000);
+    }, 2000);
+  }
+
+  /**
+   * uploadPhoto
+   */
+  uploadPhoto() {
+    this.uploadInputRef.nativeElement.click();
+    const uploadInput = this.uploadInputRef.nativeElement;
+    uploadInput.addEventListener('change', (e: any) =>
+      this.handleFileUpload(e)
+    );
   }
 }
