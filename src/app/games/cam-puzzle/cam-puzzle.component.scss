@@ -6,15 +6,6 @@ h1 {
   @apply mb-4 text-xl font-bold
 }
 
-.btns-holder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-
 .select {
   @apply m-0 border border-gray-300 bg-white text-gray-900 text-center rounded-md;
   padding: 0 8px;
