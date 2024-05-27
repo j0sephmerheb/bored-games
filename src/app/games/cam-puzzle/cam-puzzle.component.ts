@@ -29,7 +29,6 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   puzzleSizes: number[] = [4, 6, 8, 10, 12];
   private resizeTimeout: any;
   private lastKnownWidth: number = window.innerWidth;
-  private lastKnownHeight: number = window.innerHeight;
 
   ngOnInit(): void {
     // Add resize event listener
@@ -48,11 +47,10 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
     clearTimeout(this.resizeTimeout);
     this.resizeTimeout = setTimeout(() => {
       const currentWidth = window.innerWidth;
-      const currentHeight = window.innerHeight;
+
       // Check if the size has changed significantly
-      if (Math.abs(currentWidth - this.lastKnownWidth) > 50 ) {
+      if (Math.abs(currentWidth - this.lastKnownWidth) > 50) {
         this.lastKnownWidth = currentWidth;
-        this.lastKnownHeight = currentHeight;
         if (this.gameStarted) {
           this.adjustPuzzleSize();
         }
@@ -86,28 +84,6 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
         };
       };
       reader.readAsDataURL(file);
-    }
-  }
-
-  /**
-   * startCamera
-   */
-  startCamera() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-          let video = document.createElement('video');
-          video.srcObject = stream;
-          video.play();
-          video.addEventListener('canplay', () => {
-            this.captureImageFromVideo(video);
-            stream.getTracks().forEach((track) => track.stop());
-          });
-        })
-        .catch(() => alert('Camera access denied or not available.'));
-    } else {
-      alert('Camera access not supported on this device.');
     }
   }
 

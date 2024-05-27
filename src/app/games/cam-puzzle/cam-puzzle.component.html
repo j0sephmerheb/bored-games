@@ -1,12 +1,10 @@
 <div class="main">
-    <h1>Cam Puzzle</h1>
+    <h1 class="mb-10">Cam Puzzle</h1>
 
     <input type="file" #uploadInput accept="image/*" style="display: none;">
 
-    <!-- Buttons 1 -->
-    <div class="btns-holder mb-4">
-        <button class="btn" (click)="startCamera()">Use Camera</button>
-
+    <!-- Buttons -->
+    <div class="flex justify-center items-center gap-2 mb-4">
         <select class="select" (change)="onPuzzleSizeChange()" [(ngModel)]="puzzleSize">
             @for(size of puzzleSizes; track size) {
                 <option [value]="size">{{size}} x {{size}}</option>
@@ -14,15 +12,12 @@
         </select>
 
         <button class="btn" (click)="uploadPhoto()">Upload Photo</button>
-    </div>
 
-    <!-- Buttons 2 -->
-    @if(gameStarted) {
-        <div class="flex justify-center items-center gap-2 mb-4">
+        @if(gameStarted) {
             <button class="btn red" (click)="createPuzzle()">Restart</button>
             <button class="btn blue" (click)="revealOriginal()">Reveal</button>
-        </div>
-    }
+        }
+    </div>
 
     <!-- Puzzle Area -->
     <div class="game-area">
