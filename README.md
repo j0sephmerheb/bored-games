@@ -1,3 +1,7 @@
+## 0.8.0
+# modfied
+- Adjust word-guessing game to get words from a new dictionary
+
 ## 0.7.0
 # modfied
 - Remove camera buttons
