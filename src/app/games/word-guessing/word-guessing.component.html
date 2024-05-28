@@ -8,21 +8,21 @@
 
     <button class="btn blue m-auto mb-4" (click)="startGame()">New Game</button>
 
-    @if(gameStarted){
     <div id="gameContainer">
         <div class="mb-2">
             Guess the words using the following characters:<br>
             <strong>{{ shuffledWord }}</strong>
         </div>
 
-        <input type="text" id="userGuess" [(ngModel)]="userGuess" placeholder="Your guess" class="input">
+        <input type="text" id="userGuess" [(ngModel)]="userGuess" placeholder="Your guess" class="input" [disabled]="!shuffledWord" [maxlength]="charCount">
 
         <div class="btns-holder">
-            <button class="btn green" (click)="submitGuess()">Submit Guess</button>
-            <button class="btn red" (click)="showWord()">Show Word</button>
+            <button class="btn green" (click)="submitGuess()" [disabled]="!gameStarted">Submit Guess</button>
+            <button class="btn red" (click)="showWord()" [disabled]="!gameStarted">Show Word</button>
         </div>
 
-        <div class="mt-4"><i><strong>Hint: </strong>{{ wordHint }}</i></div>
+        @if(shuffledWord){
+            <div class="mt-4"><i><strong>Hint: </strong>{{ wordHint }}</i></div>
+        }
     </div>
-    }
 </div>

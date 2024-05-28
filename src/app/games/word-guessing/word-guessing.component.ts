@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-word-guessing',
   standalone: true,
-  imports: [FormsModule], 
+  imports: [FormsModule],
   templateUrl: './word-guessing.component.html',
-  styleUrl: './word-guessing.component.scss',
+  styleUrls: ['./word-guessing.component.scss'],
 })
 export class WordGuessingComponent {
   charCount: number = 4;
@@ -16,12 +16,13 @@ export class WordGuessingComponent {
   shuffledWord: string = '';
   userGuess: string = '';
   wordHint: string = '';
+  checkedWords: Set<string> = new Set(); // Track checked words to avoid repetition
 
   constructor(private http: HttpClient) {}
 
   /**
    * startGame
-   * @returns 
+   * @returns
    */
   async startGame() {
     if (this.charCount < 4 || this.charCount > 20) {
@@ -29,32 +30,43 @@ export class WordGuessingComponent {
       return;
     }
 
-    const word = await this.fetchRandomWord(this.charCount);
-    if (!word) {
-      alert('Could not fetch a word. Please try again.');
-      return;
+    this.gameStarted = false;
+    this.checkedWords.clear(); // Reset the set for new game start
+    let word: string | null = null;
+    let definition: string | null = null;
+
+    while (!definition) {
+      const result = await this.fetchRandomWord(this.charCount);
+      if (!result || this.checkedWords.has(result.word)) {
+        continue;
+      }
+      this.checkedWords.add(result.word);
+      word = result.word;
+      definition = result.definition;
     }
 
-    this.originalWord = word;
-    this.wordHint = await this.fetchWordDefinition(this.originalWord) || 'No definition available';
-    this.shuffledWord = this.shuffleWord(this.originalWord);
+    this.originalWord = word!;
+    this.wordHint = definition!;
+    this.shuffledWord = this.shuffleWord(this.originalWord.toLowerCase()); // Convert to lowercase before shuffling
     this.userGuess = '';
     this.gameStarted = true;
   }
 
-
   /**
    * fetchRandomWord
-   * @param length 
-   * @returns 
+   * @param length
+   * @returns
    */
-  async fetchRandomWord(length: number): Promise<string | null> {
+  async fetchRandomWord(length: number): Promise<{ word: string, definition: string } | null> {
     try {
-      const data = await this.http.get<{ [key: string]: string[] }>('assets/words.json').toPromise();
-      const words = data?.[length.toString()] ?? [];
-      if (words.length > 0) {
-        const randomIndex = Math.floor(Math.random() * words.length);
-        return words[randomIndex];
+      const data = await this.http.get<{ [key: string]: { [word: string]: string } }>('assets/words.json').toPromise();
+      const words = data?.[length.toString()] ?? {};
+      const wordList = Object.keys(words);
+      if (wordList.length > 0) {
+        const randomIndex = Math.floor(Math.random() * wordList.length);
+        const word = wordList[randomIndex];
+        const definition = words[word];
+        return { word, definition };
       } else {
         console.error(`No words found of length ${length}`);
         return null;
@@ -65,26 +77,11 @@ export class WordGuessingComponent {
     }
   }
 
-  /**
-   * fetchWordDefinition
-   * @param word 
-   * @returns 
-   */
-  async fetchWordDefinition(word: string): Promise<string | null> {
-    try {
-      const data = await this.http.get<any[]>(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`).toPromise();
-      return data?.[0]?.meanings?.[0]?.definitions?.[0]?.definition ?? null;
-    } catch (error) {
-      console.error('Error fetching word definition:', error);
-      return null;
-    }
-  }
-
 
   /**
    * shuffleWord
-   * @param word 
-   * @returns 
+   * @param word
+   * @returns
    */
   shuffleWord(word: string): string {
     let shuffledWord = word;
@@ -111,16 +108,14 @@ export class WordGuessingComponent {
     }
   }
 
-
   /**
    * showWord
    */
   showWord() {
     alert('The correct word is ' + this.originalWord);
-    this.shuffledWord = this.originalWord;
+    this.shuffledWord = this.originalWord.toLowerCase();
     this.disableGame();
   }
-
 
   /**
    * disableGame
