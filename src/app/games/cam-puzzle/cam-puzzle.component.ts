@@ -23,9 +23,9 @@ export class CamPuzzleComponent implements OnInit, OnDestroy {
   originalImageWidth!: number;
   originalImageHeight!: number;
   firstSelectedPiece: any = null;
-  gameStarted: boolean = false;
-  alertMsg: string = '';
-  puzzleSize: number = 4;
+  gameStarted = false;
+  alertMsg = '';
+  puzzleSize = 4;
   puzzleSizes: number[] = [4, 6, 8, 10, 12];
   private resizeTimeout: any;
   private lastKnownWidth: number = window.innerWidth;

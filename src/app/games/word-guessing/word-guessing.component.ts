@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,15 +10,15 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./word-guessing.component.scss'],
 })
 export class WordGuessingComponent {
-  charCount: number = 4;
-  gameStarted: boolean = false;
-  originalWord: string = '';
-  shuffledWord: string = '';
-  userGuess: string = '';
-  wordHint: string = '';
-  checkedWords: Set<string> = new Set(); // Track checked words to avoid repetition
+  charCount = 4;
+  gameStarted = false;
+  originalWord = '';
+  shuffledWord = '';
+  userGuess = '';
+  wordHint = '';
+  checkedWords = new Set<string>(); // Track checked words to avoid repetition
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   /**
    * startGame
@@ -59,7 +59,7 @@ export class WordGuessingComponent {
    */
   async fetchRandomWord(length: number): Promise<{ word: string, definition: string } | null> {
     try {
-      const data = await this.http.get<{ [key: string]: { [word: string]: string } }>('assets/words.json').toPromise();
+      const data = await this.http.get<Record<string, Record<string, string>>>('assets/words.json').toPromise();
       const words = data?.[length.toString()] ?? {};
       const wordList = Object.keys(words);
       if (wordList.length > 0) {
