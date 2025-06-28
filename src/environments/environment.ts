@@ -1,4 +1,6 @@
+import { version } from '../../package.json';
+
 export const environment = {
   production: false,
-  version: require('../../package.json').version,
+  version,
 };
