@@ -1,3 +1,6 @@
+### WEBSITE
+# https://bored-games.josephmerheb.net/
+
 ## 0.8.0
 # modfied
 - Adjust word-guessing game to get words from a new dictionary
