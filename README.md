@@ -2,11 +2,11 @@
 # https://bored-games.josephmerheb.net/
 
 ## 0.8.0
-# modfied
+# modified
 - Adjust word-guessing game to get words from a new dictionary
 
 ## 0.7.0
-# modfied
+# modified
 - Remove camera buttons
 
 ## 0.6.2
@@ -18,5 +18,5 @@
 - Adjust scroll on mobile
 
 ## 0.6.0
-# modfied
+# modified
 - Adjust resize
